@@ -19,8 +19,9 @@ String path;
 
 void setup() {
   size(800, 400);
-  path = sketchPath();
-  //path = "/Users/andreasrefsgaard/Dropbox/instaClockTest";
+  noCursor();
+  //path = sketchPath();
+  path = "/Users/andreasrefsgaard/Dropbox/instaClockTest";
 
   imgs = new PImage[10][100];
   noStroke();
