@@ -1,3 +1,10 @@
+/*To do
+
+- Perhaps only load the files from folders that have a changed number of files
+- Flexible array size instead of the hardcoded 100
+
+ */
+
 PImage[][] imgs; 
 
 int firstDigitIndex = 0;
@@ -8,11 +15,15 @@ int previousSecondDigit = 0;
 
 int nFiles = 0;
 
+String path;
+
 void setup() {
   size(800, 400);
+  path = sketchPath();
+  //path = "/Users/andreasrefsgaard/Dropbox/instaClockTest";
 
   imgs = new PImage[10][100];
-
+  noStroke();
   loadFilesInFolders();
 }
 
@@ -26,33 +37,47 @@ void draw() {
   if (previousFirstDigit != firstDigit) {
     firstDigitIndex = floor(random(imgs[firstDigit].length));
   }
+  
+  if (imgs[firstDigit].length > 0) {
+    image(imgs[firstDigit][firstDigitIndex], 0, 0, width/2, height);
+  } else {
+    fill(0);
+    rect(0, 0, width/2, height);
+    fill(255, 0 , 0);
+    text("No images for " + firstDigit, 100, 100);
+  }
+  
+  if (imgs[secondDigit].length > 0) {
+    image(imgs[secondDigit][secondDigitIndex], width/2, 0, width/2, height); //Nullpointer here
+  } else {
+    fill(0);
+    rect(width/2, 0, width/2, height);
+    fill(255, 0 , 0);
+    text("No images for " + secondDigit, width/2 + 100, 100);
+  }
 
-  image(imgs[firstDigit][firstDigitIndex], 0, 0, width/2, height);
-  image(imgs[secondDigit][secondDigitIndex], width/2, 0, width/2, height);
 
   previousSecondDigit = secondDigit;
   previousFirstDigit = firstDigit;
 
-  fill(255, 0, 0);
-  text(firstDigit + " " + secondDigit, 10, 10);
+  //fill(0, 255, 0);
+  //text(firstDigit + " " + secondDigit, 10, 10); //Debug text
+  if (frameCount % 100 == 0) checkForNewFiles(); 
 }
 
 
 void checkForNewFiles () {
-    String path = sketchPath();
-    
+  
+    //String path = sketchPath();  
     int howManyFiles = 0;
     
     for (int numbers = 0; numbers < 10; numbers++) {
       String[] filenames = listFileNames(path+"/data/" + numbers, txtFilter);
       //printArray(filenames);
-    
-      //println();
-      //println(filenames.length + " frameCount: " + frameCount);
       howManyFiles += filenames.length;
     }
     
-    println("howManyFiles: " + " " + howManyFiles);
+    //println("howManyFiles: " + " " + howManyFiles);
     
     if (nFiles != howManyFiles) {
       println("New number of files... Gonna load em!");
@@ -62,20 +87,21 @@ void checkForNewFiles () {
 }
 
 
-void mousePressed() {
- checkForNewFiles(); 
-}
 
 
 void loadFilesInFolders () {
-  String path = sketchPath();
+  
+  background(0);
+   text("loading new files", 10, 10);
+  
+  //String path = sketchPath();
   for (int numbers = 0; numbers < 10; numbers++) {
     String[] filenames = listFileNames(path+"/data/" + numbers, txtFilter);
     printArray(filenames);
 
     PImage[] incImgs = new PImage[filenames.length];
     for (int i = 0; i < incImgs.length; i++) {
-      incImgs[i] = loadImage(numbers + "/" + filenames[i]);
+      incImgs[i] = loadImage(path+"/data/" + numbers + "/" + filenames[i]);
     }
     imgs[numbers] = incImgs;
   }
