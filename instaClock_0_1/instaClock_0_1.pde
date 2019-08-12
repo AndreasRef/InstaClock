@@ -6,6 +6,8 @@ int previousFirstDigit = 0;
 int secondDigitIndex = 0;
 int previousSecondDigit = 0;
 
+int nFiles = 0;
+
 void setup() {
   size(800, 400);
 
@@ -35,13 +37,35 @@ void draw() {
   text(firstDigit + " " + secondDigit, 10, 10);
 }
 
+
 void checkForNewFiles () {
-  String path = sketchPath();
-  for (int numbers = 0; numbers < 10; numbers++) {
-    String[] filenames = listFileNames(path+"/data/" + numbers, txtFilter);
-    printArray(filenames);
-  }
+    String path = sketchPath();
+    
+    int howManyFiles = 0;
+    
+    for (int numbers = 0; numbers < 10; numbers++) {
+      String[] filenames = listFileNames(path+"/data/" + numbers, txtFilter);
+      //printArray(filenames);
+    
+      //println();
+      //println(filenames.length + " frameCount: " + frameCount);
+      howManyFiles += filenames.length;
+    }
+    
+    println("howManyFiles: " + " " + howManyFiles);
+    
+    if (nFiles != howManyFiles) {
+      println("New number of files... Gonna load em!");
+      loadFilesInFolders();
+    }
+    nFiles = howManyFiles;
 }
+
+
+void mousePressed() {
+ checkForNewFiles(); 
+}
+
 
 void loadFilesInFolders () {
   String path = sketchPath();
