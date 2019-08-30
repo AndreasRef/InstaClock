@@ -38,19 +38,19 @@ void setup() {
             print("[" + nSubfolders + "]" + "[" + j + "]" + "[" + k + "]  ");
             imgs[nSubfolders][j][k] = loadImage(f.getName() +"/" + j + "/" + subDirectoryFiles[k]);
           }
+          
+          println("\n\nLets print out the [nSubfolders][j] arrays to see what images are loaded");
+          printArray(imgs[nSubfolders][j]);
+          
         println("\n----------------------- \n");
       }
 
-
-      println("\n\nLets make sure that images are loaded correctly");
-      printArray(imgs[nSubfolders]);
-      nSubfolders++;
-      
+      nSubfolders++;      
     }
     println("\n----------------------- \n");
   }
 
-  noLoop();
+  //noLoop();
 }
 
 void draw() {
@@ -59,7 +59,16 @@ void draw() {
       //image(imgs[j][i], i*width/10, j*height/nSubfolders, width/10, height/nSubfolders);
     }
   }
-  image(imgs[0][frameCount%10][0], 0, 0, width, height);
+  image(imgs[activeSubfolder][0][0], 0, 0, width, height);
+}
+
+void keyPressed() {
+  activeSubfolder++;
+  
+  if (activeSubfolder >= nSubfolders) {
+    activeSubfolder = 0;
+  }
+  println(activeSubfolder);
 }
 
 // This function returns all the files in a directory as an array of Strings  
