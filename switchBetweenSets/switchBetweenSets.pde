@@ -11,13 +11,113 @@ int previousSecondDigit = 0;
 
 int activeSubfolder = 0;
 
+int nFiles = 0;
+
+String path;
+
 void setup() {
   size(800, 400);
   background(0);
+  path = sketchPath() + "/data/";
   imgs = new PImage[10][10][10];
 
+  loadFilesInFolders();
+}
+
+void draw() {
+
+  int secondDigit = second()%10;
+  int firstDigit = floor(second()/10);
+
+  if (previousSecondDigit != secondDigit) {
+    secondDigitIndex = floor(random(imgs[activeSubfolder][secondDigit].length));
+    while (imgs[activeSubfolder][secondDigit][secondDigitIndex] == null) {
+      secondDigitIndex = floor(random(imgs[activeSubfolder][secondDigit].length));
+    }
+  }
+  if (previousFirstDigit != firstDigit) {
+    firstDigitIndex = floor(random(imgs[activeSubfolder][firstDigit].length));
+    while (imgs[activeSubfolder][firstDigit][firstDigitIndex] == null) {
+      firstDigitIndex = floor(random(imgs[activeSubfolder][firstDigit].length));
+    }
+  }
+
+  if (imgs[activeSubfolder][firstDigit][firstDigitIndex] != null) {
+    //image(imgs[activeSubfolder][firstDigit][firstDigitIndex], 0, 0, width/2, height);
+    image(imgs[activeSubfolder][firstDigit][0], 0, 0, width/2, height);
+  } else {
+    fill(0);
+    rect(0, 0, width/2, height);
+    fill(255, 0, 0);
+    text("No images for " + firstDigit, 100, 100);
+  }
+
+  if (imgs[activeSubfolder][secondDigit][secondDigitIndex] != null) {
+    //image(imgs[activeSubfolder][secondDigit][secondDigitIndex], width/2, 0, width/2, height); //Nullpointer here
+    image(imgs[activeSubfolder][secondDigit][secondDigitIndex], width/2, 0, width/2, height);
+  } else {
+    fill(0);
+    rect(width/2, 0, width/2, height);
+    fill(255, 0, 0);
+    text("No images for " + secondDigit + "...", width/2 + 100, 100);
+  }
+
+  previousSecondDigit = secondDigit;
+  previousFirstDigit = firstDigit;
+}
+
+void keyPressed() {
+  activeSubfolder++;
+  if (activeSubfolder >= nSubfolders) {
+    activeSubfolder = 0;
+  }
+  println(activeSubfolder);
+}
+
+void mouseClicked() {
+ checkForNewFiles(); 
+}
+
+void checkForNewFiles () {
+  
+  println("CHECKING FOR NEW FILES");
+
+  int howManyFiles = 0;
+
   nSubfolders = 0; //Quick way to try to avoid .DS_Store and other annoying irrelevant files. This could be filtered out in a more clever way instead.
-  String path = sketchPath() + "/data/";
+
+  println("Listing all filenames in the top directory: ");
+  String[] filenames = listFileNames(path);
+  filenames = sort(filenames); //Sort alphabetically
+  //printArray(filenames);
+
+  println("\nLets check if each file is a directory: ");
+  File[] files = listFiles(path);
+  for (int i = 0; i < files.length; i++) {
+    File f = files[i];    
+    //println("Name: " + f.getName());
+    //println("Is directory: " + f.isDirectory());
+
+    if (f.isDirectory()) {
+      //println("path to directory: " + path + f.getName());
+
+      for (int j = 0; j < 10; j++) {
+        String[] subFolderFileNames = listFileNamesWithFilter(path + f.getName() + "/" + j, imageFilter);
+        howManyFiles += subFolderFileNames.length;
+      }
+    }
+  }
+  if (nFiles != howManyFiles) {
+      println("New number of files: " + howManyFiles + " ... Gonna load em!");
+      loadFilesInFolders();
+    } else {
+      println("Same number of files... : " + howManyFiles + " Not loading!");
+    }
+    nFiles = howManyFiles;
+}
+
+void loadFilesInFolders() {
+  nSubfolders = 0; //Quick way to try to avoid .DS_Store and other annoying irrelevant files. This could be filtered out in a more clever way instead.
 
   println("Listing all filenames in the top directory: ");
   String[] filenames = listFileNames(path);
@@ -35,78 +135,27 @@ void setup() {
       println("path to directory: " + path + f.getName());
 
       for (int j = 0; j < 10; j++) {
-          println("What images are inside this directory (filtered to only look for png+jpg):");
-          String[] subDirectoryFiles = listFileNamesWithFilter(path + f.getName()+ "/" + j + "/", imageFilter);
-          subDirectoryFiles = sort(subDirectoryFiles); //Sort alphabetically
-          printArray(subDirectoryFiles);
+        println("What images are inside this directory (filtered to only look for png+jpg):");
+        String[] subDirectoryFiles = listFileNamesWithFilter(path + f.getName()+ "/" + j + "/", imageFilter);
+        subDirectoryFiles = sort(subDirectoryFiles); //Sort alphabetically
+        printArray(subDirectoryFiles);
 
-          print("loading images into array: ");
-          for (int k = 0; k < subDirectoryFiles.length; k++) {
-            print("[" + nSubfolders + "]" + "[" + j + "]" + "[" + k + "]  ");
-            imgs[nSubfolders][j][k] = loadImage(f.getName() +"/" + j + "/" + subDirectoryFiles[k]);
-          }
-          
-          println("\n\nLets print out the [nSubfolders][j] arrays to see what images are loaded");
-          printArray(imgs[nSubfolders][j]);
-          
+        print("loading images into array: ");
+        for (int k = 0; k < subDirectoryFiles.length; k++) {
+          print("[" + nSubfolders + "]" + "[" + j + "]" + "[" + k + "]  ");
+          imgs[nSubfolders][j][k] = loadImage(f.getName() +"/" + j + "/" + subDirectoryFiles[k]);
+        }
+
+        println("\n\nLets print out the [nSubfolders][j] arrays to see what images are loaded");
+        printArray(imgs[nSubfolders][j]);
+
         println("\n----------------------- \n");
       }
 
-      nSubfolders++;      
+      nSubfolders++;
     }
     println("\n----------------------- \n");
   }
-
-}
-
-void draw() {
-  
-  int secondDigit = second()%10;
-  int firstDigit = floor(second()/10);
-  
-  if (previousSecondDigit != secondDigit) {
-    secondDigitIndex = floor(random(imgs[activeSubfolder][secondDigit].length));
-    while (imgs[activeSubfolder][secondDigit][secondDigitIndex] == null) {
-      secondDigitIndex = floor(random(imgs[activeSubfolder][secondDigit].length));
-    }
-  }
-  if (previousFirstDigit != firstDigit) {
-    firstDigitIndex = floor(random(imgs[activeSubfolder][firstDigit].length));
-    while (imgs[activeSubfolder][firstDigit][firstDigitIndex] == null) {
-      firstDigitIndex = floor(random(imgs[activeSubfolder][firstDigit].length));
-    }
-  }
-  
-  if (imgs[activeSubfolder][firstDigit][firstDigitIndex] != null) {
-    //image(imgs[activeSubfolder][firstDigit][firstDigitIndex], 0, 0, width/2, height);
-    image(imgs[activeSubfolder][firstDigit][0], 0, 0, width/2, height);
-  } else {
-    fill(0);
-    rect(0, 0, width/2, height);
-    fill(255, 0 , 0);
-    text("No images for " + firstDigit, 100, 100);
-  }
-  
-  if (imgs[activeSubfolder][secondDigit][secondDigitIndex] != null) {
-    //image(imgs[activeSubfolder][secondDigit][secondDigitIndex], width/2, 0, width/2, height); //Nullpointer here
-    image(imgs[activeSubfolder][secondDigit][secondDigitIndex], width/2, 0, width/2, height);
-  } else {
-    fill(0);
-    rect(width/2, 0, width/2, height);
-    fill(255, 0 , 0);
-    text("No images for " + secondDigit + "..." , width/2 + 100, 100);
-  }
-
-  previousSecondDigit = secondDigit;
-  previousFirstDigit = firstDigit;
-}
-
-void keyPressed() {
-  activeSubfolder++;
-  if (activeSubfolder >= nSubfolders) {
-    activeSubfolder = 0;
-  }
-  println(activeSubfolder);
 }
 
 // This function returns all the files in a directory as an array of Strings  
