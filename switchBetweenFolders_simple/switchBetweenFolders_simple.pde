@@ -1,16 +1,18 @@
 /* To do:
-
 -  
-
 */
 import java.util.Date;
 
 PImage[][] imgs;
 int nSubfolders;
 
+int activeSubfolder = 0;
+
 void setup() {
   size(400,400);
   imgs = new PImage[10][10];
+  
+  nSubfolders = 0; //Quick way to try to avoid .DS_Store and other annoying irrelevant files. This could be filtered out in a more clever way instead.
   
   String path = sketchPath() + "/data";
 
@@ -18,8 +20,6 @@ void setup() {
   String[] filenames = listFileNames(path);
   filenames = sort(filenames); //Sort alphabetically
   printArray(filenames);
-  
-  nSubfolders = 0; //Quick way to try to avoid .DS_Store and other annoying irrelevant files. This could be filtered out in a more clever way instead.
 
   println("\nLets check if a file is a directory: ");
   File[] files = listFiles(path);

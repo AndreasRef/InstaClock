@@ -3,10 +3,17 @@ import java.util.Date;
 PImage[][][] imgs;
 int nSubfolders;
 
+int firstDigitIndex = 0;
+int previousFirstDigit = 0;
+
+int secondDigitIndex = 0;
+int previousSecondDigit = 0;
+
 int activeSubfolder = 0;
 
 void setup() {
-  size(400, 400);
+  size(800, 400);
+  background(0);
   imgs = new PImage[10][10][10];
 
   nSubfolders = 0; //Quick way to try to avoid .DS_Store and other annoying irrelevant files. This could be filtered out in a more clever way instead.
@@ -50,21 +57,52 @@ void setup() {
     println("\n----------------------- \n");
   }
 
-  //noLoop();
 }
 
 void draw() {
-  for (int i = 0; i<10; i++) {
-    for (int j = 0; j<nSubfolders; j++) {
-      //image(imgs[j][i], i*width/10, j*height/nSubfolders, width/10, height/nSubfolders);
+  
+  int secondDigit = second()%10;
+  int firstDigit = floor(second()/10);
+  
+  if (previousSecondDigit != secondDigit) {
+    secondDigitIndex = floor(random(imgs[activeSubfolder][secondDigit].length));
+    while (imgs[activeSubfolder][secondDigit][secondDigitIndex] == null) {
+      secondDigitIndex = floor(random(imgs[activeSubfolder][secondDigit].length));
     }
   }
-  image(imgs[activeSubfolder][0][0], 0, 0, width, height);
+  if (previousFirstDigit != firstDigit) {
+    firstDigitIndex = floor(random(imgs[activeSubfolder][firstDigit].length));
+    while (imgs[activeSubfolder][firstDigit][firstDigitIndex] == null) {
+      firstDigitIndex = floor(random(imgs[activeSubfolder][firstDigit].length));
+    }
+  }
+  
+  if (imgs[activeSubfolder][firstDigit][firstDigitIndex] != null) {
+    //image(imgs[activeSubfolder][firstDigit][firstDigitIndex], 0, 0, width/2, height);
+    image(imgs[activeSubfolder][firstDigit][0], 0, 0, width/2, height);
+  } else {
+    fill(0);
+    rect(0, 0, width/2, height);
+    fill(255, 0 , 0);
+    text("No images for " + firstDigit, 100, 100);
+  }
+  
+  if (imgs[activeSubfolder][secondDigit][secondDigitIndex] != null) {
+    //image(imgs[activeSubfolder][secondDigit][secondDigitIndex], width/2, 0, width/2, height); //Nullpointer here
+    image(imgs[activeSubfolder][secondDigit][secondDigitIndex], width/2, 0, width/2, height);
+  } else {
+    fill(0);
+    rect(width/2, 0, width/2, height);
+    fill(255, 0 , 0);
+    text("No images for " + secondDigit + "..." , width/2 + 100, 100);
+  }
+
+  previousSecondDigit = secondDigit;
+  previousFirstDigit = firstDigit;
 }
 
 void keyPressed() {
   activeSubfolder++;
-  
   if (activeSubfolder >= nSubfolders) {
     activeSubfolder = 0;
   }
