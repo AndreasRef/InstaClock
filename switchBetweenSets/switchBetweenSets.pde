@@ -154,7 +154,7 @@ void loadFilesInFolders() {
         print("loading images into array: ");
         for (int k = 0; k < subDirectoryFiles.length; k++) {
           print("[" + nSubfolders + "]" + "[" + j + "]" + "[" + k + "]  ");
-          imgs[nSubfolders][j][k] = loadImage(f.getName() +"/" + j + "/" + subDirectoryFiles[k]);
+          imgs[nSubfolders][j][k] = loadImage(path + f.getName() +"/" + j + "/" + subDirectoryFiles[k]);
           
         }
 
