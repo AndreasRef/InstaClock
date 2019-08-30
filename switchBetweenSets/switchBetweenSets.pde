@@ -19,6 +19,7 @@ void setup() {
   size(800, 400);
   background(0);
   path = sketchPath() + "/data/";
+  //path = "/Users/andreasrefsgaard/Dropbox/instaClockTest/sets/";
   imgs = new PImage[10][10][10];
 
   loadFilesInFolders();
@@ -88,7 +89,7 @@ void checkForNewFiles () {
 
   int howManyFiles = 0;
 
-  nSubfolders = 0; //Quick way to try to avoid .DS_Store and other annoying irrelevant files. This could be filtered out in a more clever way instead.
+  //nSubfolders = 0; //Quick way to try to avoid .DS_Store and other annoying irrelevant files. This could be filtered out in a more clever way instead.
 
   println("Listing all filenames in the top directory: ");
   String[] filenames = listFileNames(path);
@@ -110,6 +111,7 @@ void checkForNewFiles () {
         howManyFiles += subFolderFileNames.length;
       }
     }
+    //nSubfolders++;
   }
   if (nFiles != howManyFiles) {
       println("New number of files: " + howManyFiles + " ... Gonna load em!");
