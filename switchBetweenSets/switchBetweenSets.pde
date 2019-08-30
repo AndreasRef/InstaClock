@@ -64,6 +64,10 @@ void draw() {
 
   previousSecondDigit = secondDigit;
   previousFirstDigit = firstDigit;
+  
+  
+  if (frameCount % 300 == 0) checkForNewFiles(); 
+  
 }
 
 void keyPressed() {
@@ -118,7 +122,9 @@ void checkForNewFiles () {
 
 void loadFilesInFolders() {
   nSubfolders = 0; //Quick way to try to avoid .DS_Store and other annoying irrelevant files. This could be filtered out in a more clever way instead.
-
+  
+  nFiles = 0;
+  
   println("Listing all filenames in the top directory: ");
   String[] filenames = listFileNames(path);
   filenames = sort(filenames); //Sort alphabetically
@@ -139,11 +145,15 @@ void loadFilesInFolders() {
         String[] subDirectoryFiles = listFileNamesWithFilter(path + f.getName()+ "/" + j + "/", imageFilter);
         subDirectoryFiles = sort(subDirectoryFiles); //Sort alphabetically
         printArray(subDirectoryFiles);
+        
+        nFiles += subDirectoryFiles.length;
+        
 
         print("loading images into array: ");
         for (int k = 0; k < subDirectoryFiles.length; k++) {
           print("[" + nSubfolders + "]" + "[" + j + "]" + "[" + k + "]  ");
           imgs[nSubfolders][j][k] = loadImage(f.getName() +"/" + j + "/" + subDirectoryFiles[k]);
+          
         }
 
         println("\n\nLets print out the [nSubfolders][j] arrays to see what images are loaded");
