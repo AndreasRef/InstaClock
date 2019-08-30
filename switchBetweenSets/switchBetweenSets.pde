@@ -10,15 +10,14 @@ void setup() {
   imgs = new PImage[10][10][10];
 
   nSubfolders = 0; //Quick way to try to avoid .DS_Store and other annoying irrelevant files. This could be filtered out in a more clever way instead.
+  String path = sketchPath() + "/data/";
 
-  String path = sketchPath() + "/data";
-
-  println("Listing all filenames in a directory: ");
+  println("Listing all filenames in the top directory: ");
   String[] filenames = listFileNames(path);
   filenames = sort(filenames); //Sort alphabetically
   printArray(filenames);
 
-  println("\nLets check if a file is a directory: ");
+  println("\nLets check if each file is a directory: ");
   File[] files = listFiles(path);
   for (int i = 0; i < files.length; i++) {
     File f = files[i];    
@@ -26,36 +25,19 @@ void setup() {
     println("Is directory: " + f.isDirectory());
 
     if (f.isDirectory()) {
-      println("path to directory: " + path+"/"+f.getName());
-
-      File[] newFiles = listFiles(path+"/"+f.getName());
-
+      println("path to directory: " + path + f.getName());
 
       for (int j = 0; j < 10; j++) {
-        
-          //println("Listing all filenames in a directory: ");
-          //String[] subFilenames = listFileNames(path+"/"+f.getName());
-          //subFilenames = sort(subFilenames); //Sort alphabetically
-          //printArray(subFilenames);
-          //The issue is here! The thing is that we have a .DS_store as the 
-          
-        
-        //File fNew = newFiles[j];
-        //println("Name: " + fNew.getName());
-        //println("Is directory: " + fNew.isDirectory());
-
-        //if (fNew.isDirectory()) {
-          println("What files are inside this directory (filtered to only look for png+jpg):");
-          String[] subDirectoryFiles = listFileNamesWithFilter(path+"/" + f.getName()+ "/" + j + "/", imageFilter);
+          println("What images are inside this directory (filtered to only look for png+jpg):");
+          String[] subDirectoryFiles = listFileNamesWithFilter(path + f.getName()+ "/" + j + "/", imageFilter);
           subDirectoryFiles = sort(subDirectoryFiles); //Sort alphabetically
           printArray(subDirectoryFiles);
 
-          println("loading images into array: ");
+          print("loading images into array: ");
           for (int k = 0; k < subDirectoryFiles.length; k++) {
             print("[" + nSubfolders + "]" + "[" + j + "]" + "[" + k + "]  ");
             imgs[nSubfolders][j][k] = loadImage(f.getName() +"/" + j + "/" + subDirectoryFiles[k]);
           }
-        //}
         println("\n----------------------- \n");
       }
 
@@ -77,6 +59,7 @@ void draw() {
       //image(imgs[j][i], i*width/10, j*height/nSubfolders, width/10, height/nSubfolders);
     }
   }
+  image(imgs[0][frameCount%10][0], 0, 0, width, height);
 }
 
 // This function returns all the files in a directory as an array of Strings  
