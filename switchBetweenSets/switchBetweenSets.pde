@@ -1,4 +1,5 @@
 import java.util.Date;
+import processing.io.*;
 
 PImage[][][] imgs;
 int nSubfolders;
@@ -23,6 +24,7 @@ void setup() {
   imgs = new PImage[10][10][10];
 
   loadFilesInFolders();
+  GPIO.pinMode(23, GPIO.INPUT_PULLUP);
 }
 
 void draw() {
@@ -65,10 +67,16 @@ void draw() {
 
   previousSecondDigit = secondDigit;
   previousFirstDigit = firstDigit;
-  
-  
+
+
   if (frameCount % 300 == 0) checkForNewFiles(); 
-  
+
+  if (GPIO.digitalRead(23) == GPIO.LOW) {
+    activeSubfolder++;
+    if (activeSubfolder >= nSubfolders) {
+      activeSubfolder = 0;
+    }
+  }
 }
 
 void keyPressed() {
@@ -80,11 +88,11 @@ void keyPressed() {
 }
 
 void mouseClicked() {
- checkForNewFiles(); 
+  checkForNewFiles();
 }
 
 void checkForNewFiles () {
-  
+
   println("CHECKING FOR NEW FILES");
 
   int howManyFiles = 0;
@@ -114,19 +122,19 @@ void checkForNewFiles () {
     //nSubfolders++;
   }
   if (nFiles != howManyFiles) {
-      println("New number of files: " + howManyFiles + " ... Gonna load em!");
-      loadFilesInFolders();
-    } else {
-      println("Same number of files... : " + howManyFiles + " Not loading!");
-    }
-    nFiles = howManyFiles;
+    println("New number of files: " + howManyFiles + " ... Gonna load em!");
+    loadFilesInFolders();
+  } else {
+    println("Same number of files... : " + howManyFiles + " Not loading!");
+  }
+  nFiles = howManyFiles;
 }
 
 void loadFilesInFolders() {
   nSubfolders = 0; //Quick way to try to avoid .DS_Store and other annoying irrelevant files. This could be filtered out in a more clever way instead.
-  
+
   nFiles = 0;
-  
+
   println("Listing all filenames in the top directory: ");
   String[] filenames = listFileNames(path);
   filenames = sort(filenames); //Sort alphabetically
@@ -147,15 +155,14 @@ void loadFilesInFolders() {
         String[] subDirectoryFiles = listFileNamesWithFilter(path + f.getName()+ "/" + j + "/", imageFilter);
         subDirectoryFiles = sort(subDirectoryFiles); //Sort alphabetically
         printArray(subDirectoryFiles);
-        
+
         nFiles += subDirectoryFiles.length;
-        
+
 
         print("loading images into array: ");
         for (int k = 0; k < subDirectoryFiles.length; k++) {
           print("[" + nSubfolders + "]" + "[" + j + "]" + "[" + k + "]  ");
           imgs[nSubfolders][j][k] = loadImage(path + f.getName() +"/" + j + "/" + subDirectoryFiles[k]);
-          
         }
 
         println("\n\nLets print out the [nSubfolders][j] arrays to see what images are loaded");
