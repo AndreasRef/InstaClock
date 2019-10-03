@@ -24,7 +24,7 @@ void setup() {
   imgs = new PImage[10][10][10];
 
   loadFilesInFolders();
-  GPIO.pinMode(23, GPIO.INPUT_PULLUP);
+  GPIO.pinMode(26, GPIO.INPUT_PULLUP);
 }
 
 void draw() {
@@ -71,7 +71,7 @@ void draw() {
 
   if (frameCount % 300 == 0) checkForNewFiles(); 
 
-  if (GPIO.digitalRead(23) == GPIO.LOW) {
+  if (GPIO.digitalRead(26) == GPIO.LOW) {
     activeSubfolder++;
     if (activeSubfolder >= nSubfolders) {
       activeSubfolder = 0;
